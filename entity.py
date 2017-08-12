@@ -1,4 +1,7 @@
-import numpy.random as rand
+import numpy as np
+
+import net
+
 
 class Entity:
     RADIUS = 2
@@ -10,23 +13,27 @@ class Entity:
         # random position
         dims = world.dims
         self.pos = (
-            rand.rand() * (dims[0] - Entity.RADIUS),
-            rand.rand() * (dims[1] - Entity.RADIUS)
+            np.random.rand() * (dims[0] - Entity.RADIUS),
+            np.random.rand() * (dims[1] - Entity.RADIUS)
         )
 
-        # 2 outputs
-        self.outputs = rand.rand(2)
+        # 2 inputs, 2 outputs
+        self.brain = net.Network([2, 2])
 
     def tick(self):
-        # random on off input
-        if rand.rand() < 0.5:
-            outputs = self.outputs
-        else:
-            outputs = (0, 0)
+        # get inputs
+        temp = self.world.get_temperature(self.pos)
+        time = self.world.get_time()
 
+        # feed forward
+        input_count = 2
+        inputs = np.ndarray((input_count, 1))
+        inputs[0] = temp
+        inputs[1] = time
+        outputs = self.brain.feed_forward(inputs)
 
         # convert outputs
-        speed = outputs[0] * Entity.MAX_FORCE
-        direction = outputs[1] * 360.0
+        speed = outputs[0][0] * Entity.MAX_FORCE
+        direction = outputs[1][0] * 360.0
 
-        print("{} {}".format(speed, direction))
+        print("speed={} direction={}".format(speed, direction))
