@@ -1,5 +1,4 @@
 import numpy as np
-import pymunk
 from pymunk.vec2d import Vec2d
 
 import net
@@ -7,7 +6,7 @@ import net
 
 class Entity:
     RADIUS = 8
-    MAX_FORCE = 30
+    MAX_FORCE = 60
     NEXT_ID = 1
 
     def __init__(self, world, weights=None):
@@ -21,29 +20,18 @@ class Entity:
         # random position
         dims = world.dims
         # padding = Entity.RADIUS * 5
-        # pos = (
+        # self.pos = (
         #     padding + np.random.rand() * (dims[0] - padding * 2),
         #     padding + np.random.rand() * (dims[1] - padding * 2)
         # )
-        pos = (dims[0] / 2, dims[1] / 2)
+        self.pos = (dims[0] / 2, dims[1] / 2)
+        self.velocity = Vec2d()
 
         # physics
-        self.body = pymunk.Body(mass=1, moment=pymunk.moment_for_circle(1, 0, Entity.RADIUS))
-        self.body.position = pos
-        shape = pymunk.Circle(self.body, Entity.RADIUS)
-        shape.friction = 0.9
-        world.physics.add(self.body, shape)
+        world.add_entity(self)
 
         # 2 inputs, 2 outputs
         self.brain = net.Network([2, 4, 5, 2], weights=weights)
-
-    @property
-    def pos(self):
-        return self.body.position
-
-    @pos.setter
-    def pos(self, pos):
-        self.body.position = pos
 
     def tick(self):
         if not self.alive:
@@ -69,11 +57,12 @@ class Entity:
         steer *= (speed, speed)
 
         # self.body.apply_impulse_at_local_point(steer)
-        self.body.velocity = steer
+        self.velocity = steer
 
         # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
 
-    def kill(self):
+    def kill(self, remove_from_world=True):
         if self.alive:
             self.alive = False
-            self.world.physics.remove(self.body, *self.body.shapes)
+            if remove_from_world:
+                self.world.remove_entity(self)

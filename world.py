@@ -1,6 +1,5 @@
 import noise
 import numpy as np
-import pymunk
 
 
 class World:
@@ -9,9 +8,16 @@ class World:
         self.time = 0
         self._noise_seed = np.random.randint(1000000)  # bah why not
 
-        self.physics = pymunk.Space()
-        self.physics.iterations = 1
-        self.physics.gravity = (0, 0)
+        self.entities = {}
+
+    def add_entity(self, e):
+        self.entities[e.id] = e
+
+    def remove_entity(self, e):
+        del self.entities[e.id]
+
+    def remove_all_entities(self):
+        self.entities.clear()
 
     @property
     def dims(self):
@@ -24,5 +30,8 @@ class World:
         return self.time / 1000
 
     def tick(self, dt):
+        # TODO dt doesnt affect time
         self.time = (self.time + 1) % 1000
-        self.physics.step(dt)
+
+        for e in self.entities:
+            e.pos += e.velocity * dt

@@ -6,7 +6,7 @@ import pyglet.graphics as g
 from sim import Simulator
 
 WORLD_SIZE = (600, 600)
-ENTITY_COUNT = 500
+ENTITY_COUNT = 10
 SPEED_SCALE = 1
 
 simulator = Simulator(WORLD_SIZE, ENTITY_COUNT)
@@ -104,7 +104,7 @@ def render_entity(e):
     render_circle(*inter_pos, e.RADIUS)
 
     # debug draw velocity
-    vel_end = inter_pos[0] + e.body.velocity[0], inter_pos[1] + e.body.velocity[1]
+    vel_end = inter_pos[0] + e.velocity[0], inter_pos[1] + e.velocity[1]
     g.draw(2, g.GL_LINES,
            ("v2f", (inter_pos[0], inter_pos[1], vel_end[0], vel_end[1])),
            ("c3B", (255, 255, 255, 255, 255, 255))
@@ -126,8 +126,8 @@ def render_world_temp():
 
 
 def main():
-    while simulator.gen_no < 100:
-        simulator.tick(10, 1)
+    # while simulator.gen_no < 1000:
+    #     simulator.tick(10, 1)
 
     Renderer().run()
 

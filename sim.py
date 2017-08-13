@@ -6,7 +6,7 @@ from world import *
 ENTITY_COUNT = 10
 SPEED_SCALE = 1
 
-TIME_PER_GENERATION = 2
+TIME_PER_GENERATION = 5
 
 MUTATE_NORMAL_MEAN = 0  # middle value
 MUTATE_NORMAL_SD = 0.2  # variation
@@ -37,8 +37,6 @@ class Simulator:
             print("Creating generation {}".format(self.gen_no))
 
             # cull silly entities
-            zone_size = 200
-            cx = self.world.dims[0] / 2
             for e in self.entities:
                 x, y = e.pos
                 if not (100 <= x <= 200 and 100 <= y <= 200):
@@ -50,7 +48,8 @@ class Simulator:
 
             # kill old generation
             for old in fittest:
-                old.kill()
+                old.kill(remove=False)
+            self.world.remove_all_entities()
             fittest.clear()
 
         # tick entities as normal
