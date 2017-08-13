@@ -1,5 +1,6 @@
-import numpy as np
 import copy
+
+import numpy as np
 
 
 def sigmoid(z):
@@ -16,7 +17,6 @@ class Network:
             self.weights = [np.random.randn(y, x)
                             for x, y in zip(sizes[:-1], sizes[1:])]
         else:
-            print("copied weights")
             self.weights = copy.deepcopy(weights)
 
     def feed_forward(self, inputs):
@@ -30,6 +30,7 @@ def get_from_indices(x, indices):
     for i in indices[:-1]:
         x = x[i]
     return x, indices[-1]
+
 
 def iterate_weights(layers):
     def recurse(weights, index):
