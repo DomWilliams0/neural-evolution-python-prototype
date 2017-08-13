@@ -45,6 +45,10 @@ class Entity:
         if not self.alive:
             return
 
+        if self.world.is_in_death_zone(self):
+            self.kill()
+            return
+
         # get inputs
         temp = self.world.get_temperature(self.pos)
         time = self.world.get_time()
