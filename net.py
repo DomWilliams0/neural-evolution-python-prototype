@@ -8,10 +8,14 @@ def sigmoid(z):
 
 
 class Network:
-    def __init__(self, sizes, weights=None):
+    def __init__(self, sizes, weights=None, biases=None):
         self.num_layers = len(sizes)
         self.sizes = sizes
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+
+        if biases is None:
+            self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        else:
+            self.biases = copy.deepcopy(biases)
 
         if weights is None:
             self.weights = [np.random.randn(y, x)

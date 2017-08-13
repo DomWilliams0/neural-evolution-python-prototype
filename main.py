@@ -6,7 +6,7 @@ import pyglet.graphics as g
 from sim import Simulator
 
 WORLD_SIZE = (600, 600)
-ENTITY_COUNT = 10
+ENTITY_COUNT = 100
 SPEED_SCALE = 1
 INITIAL_GENERATIONS = 0
 FAST_FORWARD_TICK_PER_SECOND = 10

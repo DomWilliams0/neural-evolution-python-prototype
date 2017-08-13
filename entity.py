@@ -17,7 +17,7 @@ class Entity:
     MAX_FORCE = 60
     NEXT_ID = 1
 
-    def __init__(self, world, weights=None):
+    def __init__(self, world, weights=None, biases=None):
         self.id = Entity.NEXT_ID
         Entity.NEXT_ID += 1
 
@@ -39,7 +39,7 @@ class Entity:
         #     padding + np.random.rand() * (dims[1] - padding * 2)
         # )
 
-        self.brain = net.Network(NET_LAYERS, weights=weights)
+        self.brain = net.Network(NET_LAYERS, weights=weights, biases=biases)
 
     @property
     def pos(self):

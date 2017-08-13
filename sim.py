@@ -55,7 +55,7 @@ class Simulator:
     def mutate_fittest(self, fittest):
         """
         :param fittest: List of living Entities
-        :return: A new generation of Entities
+        :return: A generator of the new generation of Entities
         """
 
         def mutate(what):
@@ -77,6 +77,11 @@ class Simulator:
             return [Entity(self.world) for _ in range(self.gen_size)]
 
         cycle = itertools.cycle(fittest)
-        return [
-            Entity(self.world, weights=mutate(next(cycle).brain.weights)) for _ in range(self.gen_size)
-        ]
+        new_gen = []
+        for _ in range(self.gen_size):
+            src_brain = next(cycle).brain
+            new_weights = mutate(src_brain.weights)
+            new_biases = mutate(src_brain.biases)
+            entity = Entity(self.world, weights=new_weights, biases=new_biases)
+            new_gen.append(entity)
+        return new_gen
