@@ -3,12 +3,15 @@ import pyglet
 from entity import *
 from world import *
 
+WORLD_SIZE = (600, 600)
+ENTITY_COUNT = 50
+
 # sim
-world = World((600, 600))
-entities = [Entity(world) for _ in range(50)]
+world = World(WORLD_SIZE)
+entities = [Entity(world) for _ in range(ENTITY_COUNT)]
 
 # renderer
-window = pyglet.window.Window(*world.dims)
+window = pyglet.window.Window(*WORLD_SIZE)
 
 
 def tick(dt):
