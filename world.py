@@ -2,6 +2,7 @@ import noise
 import numpy as np
 from Box2D import *
 
+TEMP_NOISE_SCALE = 35
 
 class World:
     def __init__(self, dims):
@@ -54,7 +55,7 @@ class World:
         return self._dims
 
     def get_temperature(self, pos):
-        return noise.snoise2(*pos, base=self._noise_seed, octaves=2)
+        return noise.snoise2(pos[0] / TEMP_NOISE_SCALE, pos[1] / TEMP_NOISE_SCALE, base=self._noise_seed, octaves=2)
 
     def get_time(self):
         return self.time / 100
