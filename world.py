@@ -10,6 +10,7 @@ class World:
         self._noise_seed = np.random.randint(1000000)  # bah why not
 
         self.physics = pymunk.Space()
+        self.physics.iterations = 1
         self.physics.gravity = (0, 0)
 
     @property

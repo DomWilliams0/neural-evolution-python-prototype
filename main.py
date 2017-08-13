@@ -6,7 +6,7 @@ import pyglet.graphics as g
 from sim import Simulator
 
 WORLD_SIZE = (600, 600)
-ENTITY_COUNT = 50
+ENTITY_COUNT = 500
 SPEED_SCALE = 1
 
 simulator = Simulator(WORLD_SIZE, ENTITY_COUNT)
@@ -125,5 +125,11 @@ def render_world_temp():
     return batch
 
 
-if __name__ == "__main__":
+def main():
+    while simulator.gen_no < 100:
+        simulator.tick(10, 1)
+
     Renderer().run()
+
+if __name__ == "__main__":
+    main()

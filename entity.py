@@ -10,9 +10,11 @@ class Entity:
     MAX_FORCE = 30
     NEXT_ID = 1
 
-    def __init__(self, world):
+    def __init__(self, world, weights=None):
         self.id = Entity.NEXT_ID
         Entity.NEXT_ID += 1
+
+        self.alive = True
 
         self.world = world
 
@@ -33,7 +35,7 @@ class Entity:
         world.physics.add(self.body, shape)
 
         # 2 inputs, 2 outputs
-        self.brain = net.Network([2, 2])
+        self.brain = net.Network([2, 4, 5, 2], weights=weights)
 
     @property
     def pos(self):
@@ -44,6 +46,9 @@ class Entity:
         self.body.position = pos
 
     def tick(self):
+        if not self.alive:
+            return
+
         # get inputs
         temp = self.world.get_temperature(self.pos)
         time = self.world.get_time()
@@ -67,3 +72,8 @@ class Entity:
         self.body.velocity = steer
 
         # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
+
+    def kill(self):
+        if self.alive:
+            self.alive = False
+            self.world.physics.remove(self.body, *self.body.shapes)
