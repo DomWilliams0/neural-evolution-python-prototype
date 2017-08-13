@@ -6,8 +6,12 @@ import net
 class Entity:
     RADIUS = 2
     MAX_FORCE = 3
+    NEXT_ID = 1
 
     def __init__(self, world):
+        self.id = Entity.NEXT_ID
+        Entity.NEXT_ID += 1
+
         self.world = world
 
         # random position
@@ -20,7 +24,7 @@ class Entity:
         # 2 inputs, 2 outputs
         self.brain = net.Network([2, 2])
 
-    def tick(self):
+    def tick(self, dt):
         # get inputs
         temp = self.world.get_temperature(self.pos)
         time = self.world.get_time()
@@ -36,4 +40,5 @@ class Entity:
         speed = outputs[0][0] * Entity.MAX_FORCE
         direction = outputs[1][0] * 360.0
 
-        print("speed={} direction={}".format(speed, direction))
+        # TODO actually move
+        print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
