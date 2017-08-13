@@ -51,11 +51,11 @@ class World:
         return noise.snoise2(*pos, base=self._noise_seed, octaves=2)
 
     def get_time(self):
-        return self.time / 1000
+        return self.time / 100
 
     def tick(self, dt):
-        # TODO dt doesnt affect time
-        self.time = (self.time + 1) % 1000
+        self.time += dt
+        self.time = int(self.time) % 100
 
         for e in self.entities.values():
             e.pos += e.velocity * dt
