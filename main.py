@@ -48,10 +48,10 @@ class Renderer(pyglet.window.Window):
     def render(self):
         self.clear()
 
-        render_world()
-
         if RENDER_TEMPERATURE:
             self.world_temp_backdrop.draw()
+
+        render_world()
 
         # TODO use interpolation?
         for e in simulator.entities:
