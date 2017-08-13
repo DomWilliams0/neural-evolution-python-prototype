@@ -1,5 +1,6 @@
 import noise
 import numpy as np
+from Box2D import *
 
 
 class World:
@@ -7,7 +8,8 @@ class World:
         self._dims = dims
         self.time = 0
         self._noise_seed = np.random.randint(1000000)  # bah why not
-        self.entities = {}
+
+        self._world = b2World(gravity=(0, 0))
 
         # arbitrary for testing
         radiuss = np.random.randint(60, 120, size=3)
@@ -34,13 +36,18 @@ class World:
         return rad <= pos[0] < self.dims[0] - rad and rad <= pos[1] < self.dims[1] - rad
 
     def add_entity(self, e):
-        self.entities[e.id] = e
+        e.body = self._world.CreateDynamicBody(userData=e)
+        e.body.CreateCircleFixture(radius=e.RADIUS)
 
     def remove_entity(self, e):
-        self.entities.pop(e.id, None)
+        if e.body:
+            self._world.DestroyBody(e.body)
+            e.body = None
 
     def remove_all_entities(self):
-        self.entities = {}
+        for b in self._world.bodies:
+            b.userData.body = None
+            self._world.DestroyBody(b)
 
     @property
     def dims(self):
@@ -56,5 +63,5 @@ class World:
         self.time += dt
         self.time = int(self.time) % 100
 
-        for e in self.entities.values():
-            e.pos += e.velocity * dt
+        # TODO iterations depend on fast forward?
+        self._world.Step(dt, 2, 1)

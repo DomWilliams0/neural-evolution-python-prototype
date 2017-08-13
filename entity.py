@@ -1,7 +1,8 @@
 from colorsys import hsv_to_rgb
+import math
 
 import numpy as np
-from pymunk.vec2d import Vec2d
+from Box2D import b2Vec2
 
 import net
 
@@ -24,21 +25,37 @@ class Entity:
         self.colour = DEFAULT_COLOUR
 
         self.world = world
+        self.body = None
+        world.add_entity(self)
+
+        dims = world.dims
+        self.pos = (dims[0] / 2, dims[1] / 2)
+        self.velocity = b2Vec2()
 
         # random position
-        dims = world.dims
         # padding = Entity.RADIUS * 5
         # self.pos = (
         #     padding + np.random.rand() * (dims[0] - padding * 2),
         #     padding + np.random.rand() * (dims[1] - padding * 2)
         # )
-        self.pos = (dims[0] / 2, dims[1] / 2)
-        self.velocity = Vec2d()
-
-        # physics
-        world.add_entity(self)
 
         self.brain = net.Network(NET_LAYERS, weights=weights)
+
+    @property
+    def pos(self):
+        return self.body.position
+
+    @pos.setter
+    def pos(self, val):
+        self.body.position = val
+
+    @property
+    def velocity(self):
+        return self.body.linearVelocity
+
+    @velocity.setter
+    def velocity(self, value):
+        self.body.linearVelocity = value
 
     def tick(self):
         if not self.alive:
@@ -64,10 +81,11 @@ class Entity:
         direction = outputs[1][0] * 360.0
         colour = hsv_to_rgb(outputs[2][0], 0.7, 0.7)
 
-        steer = Vec2d(0, -1)
-        steer.angle_degrees = direction
-        steer *= (speed, speed)
-        self.velocity = steer
+        direction_rad = np.deg2rad(direction)
+        self.velocity = b2Vec2(
+            speed * math.cos(direction_rad),
+            speed * math.sin(direction_rad)
+        )
 
         self.colour = colour
 
