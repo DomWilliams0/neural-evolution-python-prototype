@@ -9,8 +9,8 @@ import net
 
 
 class Entity:
-    RADIUS = 5
-    MAX_FORCE = 5
+    RADIUS = 8
+    MAX_FORCE = 6
     NEXT_ID = 1
 
     def __init__(self, world):
