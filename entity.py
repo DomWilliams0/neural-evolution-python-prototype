@@ -1,11 +1,16 @@
+import math
+
 import numpy as np
+import pyglet.graphics as g
+import pymunk
+from pymunk.vec2d import Vec2d
 
 import net
 
 
 class Entity:
-    RADIUS = 2
-    MAX_FORCE = 3
+    RADIUS = 5
+    MAX_FORCE = 5
     NEXT_ID = 1
 
     def __init__(self, world):
@@ -16,13 +21,29 @@ class Entity:
 
         # random position
         dims = world.dims
-        self.pos = (
-            np.random.rand() * (dims[0] - Entity.RADIUS),
-            np.random.rand() * (dims[1] - Entity.RADIUS)
+        padding = Entity.RADIUS * 5
+        pos = (
+            padding + np.random.rand() * (dims[0] - padding * 2),
+            padding + np.random.rand() * (dims[1] - padding * 2)
         )
+
+        # physics
+        self.body = pymunk.Body(mass=1, moment=pymunk.moment_for_circle(1, 0, Entity.RADIUS))
+        self.body.position = pos
+        shape = pymunk.Circle(self.body, Entity.RADIUS)
+        shape.friction = 0.9
+        world.physics.add(self.body, shape)
 
         # 2 inputs, 2 outputs
         self.brain = net.Network([2, 2])
+
+    @property
+    def pos(self):
+        return self.body.position
+
+    @pos.setter
+    def pos(self, pos):
+        self.body.position = pos
 
     def tick(self, dt):
         # get inputs
@@ -40,5 +61,37 @@ class Entity:
         speed = outputs[0][0] * Entity.MAX_FORCE
         direction = outputs[1][0] * 360.0
 
-        # TODO actually move
-        print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
+        steer = Vec2d(0, -1)
+        steer.angle_degrees = direction
+        steer *= (Entity.MAX_FORCE * speed, Entity.MAX_FORCE * speed)
+
+        # self.body.apply_impulse_at_local_point(steer)
+        self.body.velocity = steer
+
+        # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
+
+    def render(self):
+        def circle(x, y, radius):
+            """https://gist.github.com/tsterker/1396796"""
+            iterations = int(2 * radius * math.pi)
+            s = math.sin(2 * math.pi / iterations)
+            c = math.cos(2 * math.pi / iterations)
+
+            dx, dy = radius, 0
+
+            g.glBegin(g.GL_TRIANGLE_FAN)
+            g.glColor3f(0.4, 0.6, 0.9)
+            g.glVertex2f(x, y)
+            for i in range(iterations + 1):
+                g.glVertex2f(x + dx, y + dy)
+                dx, dy = (dx * c - dy * s), (dy * c + dx * s)
+            g.glEnd()
+
+        circle(self.pos[0], self.pos[1], Entity.RADIUS)
+
+        # debug draw velocity
+        vel_end = self.pos[0] + self.body.velocity[0], self.pos[1] + self.body.velocity[1]
+        g.draw(2, g.GL_LINES,
+               ("v2f", (self.pos[0], self.pos[1], vel_end[0], vel_end[1])),
+               ("c3B", (255, 255, 255, 255, 255, 255))
+               )

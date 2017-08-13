@@ -1,8 +1,13 @@
+import pymunk
+
 class World:
     def __init__(self, dims):
         self._dims = dims
-        self._time = 0
+        self.time = 0
         # TODO time and noise
+
+        self.physics = pymunk.Space()
+        self.physics.gravity = (0, 0)
 
     @property
     def dims(self):
@@ -14,7 +19,8 @@ class World:
         return numpy.random.rand()
 
     def get_time(self):
-        return (self._time % 100) / 100.0
+        return (self.time % 100) / 100.0
 
-    def tick(self):
-        self._time += 1
+    def tick(self, dt):
+        self.time += 1
+        self.physics.step(dt)
