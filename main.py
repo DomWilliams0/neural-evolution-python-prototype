@@ -8,13 +8,13 @@ from sim import Simulator
 WORLD_SIZE = (600, 600)
 ENTITY_COUNT = 10
 SPEED_SCALE = 1
+INITIAL_GENERATIONS = 150
+FAST_FORWARD_TICK_PER_SECOND = 10
+# TODO add toggle for fast forward
 
 simulator = Simulator(WORLD_SIZE, ENTITY_COUNT)
 
 # renderer
-TICKS_PER_SECOND = 20
-SKIP_TICKS = 1 / TICKS_PER_SECOND
-MAX_FRAMESKIP = 20
 
 # beware, very slow
 RENDER_TEMPERATURE = False
@@ -125,8 +125,9 @@ def render_world_temp():
 
 
 def main():
-    # while simulator.gen_no < 200:
-    #     simulator.tick(3, 1)
+    dt = 1.0 / FAST_FORWARD_TICK_PER_SECOND
+    while simulator.gen_no < INITIAL_GENERATIONS:
+        simulator.tick(dt)
 
     Renderer().run()
 
