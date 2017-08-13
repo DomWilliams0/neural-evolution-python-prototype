@@ -1,6 +1,7 @@
+import math
+
 import pyglet
 import pyglet.graphics as g
-import math
 
 from sim import Simulator
 
@@ -15,6 +16,9 @@ TICKS_PER_SECOND = 20
 SKIP_TICKS = 1 / TICKS_PER_SECOND
 MAX_FRAMESKIP = 20
 
+# beware, very slow
+RENDER_TEMPERATURE = False
+
 
 class Renderer(pyglet.window.Window):
     def __init__(self):
@@ -23,6 +27,8 @@ class Renderer(pyglet.window.Window):
 
         # background colour
         pyglet.graphics.glClearColor(0.05, 0.05, 0.07, 1)
+        if RENDER_TEMPERATURE:
+            self.world_temp_backdrop = render_world_temp()
 
         self.total_ticks = 0
         self.get_tick_count()  # ticks clock
@@ -48,6 +54,9 @@ class Renderer(pyglet.window.Window):
 
     def render(self, interpolation):
         self.clear()
+
+        if RENDER_TEMPERATURE:
+            self.world_temp_backdrop.draw()
 
         # TODO use interpolation?
         for e in simulator.entities:
@@ -100,6 +109,21 @@ def render_entity(e):
            ("v2f", (inter_pos[0], inter_pos[1], vel_end[0], vel_end[1])),
            ("c3B", (255, 255, 255, 255, 255, 255))
            )
+
+
+def render_world_temp():
+    world = simulator.world
+    dims = world.dims
+    batch = pyglet.graphics.Batch()
+    print("Rendering temperature texture")
+    for y in range(dims[1]):
+        for x in range(dims[0]):
+            val = world.get_temperature((x, y))
+            colour = (val, val, val)
+            batch.add(1, pyglet.gl.GL_POINTS, None, ("v2i", (x, y)), ("c3f", colour))
+
+    return batch
+
 
 if __name__ == "__main__":
     Renderer().run()
