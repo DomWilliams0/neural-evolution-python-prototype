@@ -74,6 +74,8 @@ class Simulator:
                 change = np.random.normal(loc=MUTATE_NORMAL_MEAN, scale=MUTATE_NORMAL_SD)
                 list_ref[i] += change
 
+            return what
+
         print("Mutating {} remaining entities".format(len(fittest)))
         # none alive: random generation
         if not fittest:
