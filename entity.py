@@ -21,11 +21,12 @@ class Entity:
 
         # random position
         dims = world.dims
-        padding = Entity.RADIUS * 5
-        pos = (
-            padding + np.random.rand() * (dims[0] - padding * 2),
-            padding + np.random.rand() * (dims[1] - padding * 2)
-        )
+        # padding = Entity.RADIUS * 5
+        # pos = (
+        #     padding + np.random.rand() * (dims[0] - padding * 2),
+        #     padding + np.random.rand() * (dims[1] - padding * 2)
+        # )
+        pos = (dims[0]/2, dims[1]/2)
 
         # physics
         self.body = pymunk.Body(mass=1, moment=pymunk.moment_for_circle(1, 0, Entity.RADIUS))
