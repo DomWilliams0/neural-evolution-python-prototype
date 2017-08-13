@@ -1,7 +1,4 @@
-import math
-
 import numpy as np
-import pyglet.graphics as g
 import pymunk
 from pymunk.vec2d import Vec2d
 
@@ -70,35 +67,3 @@ class Entity:
         self.body.velocity = steer
 
         # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
-
-    def render(self):
-        def circle(x, y, radius):
-            """https://gist.github.com/tsterker/1396796"""
-            iterations = int(2 * radius * math.pi)
-            s = math.sin(2 * math.pi / iterations)
-            c = math.cos(2 * math.pi / iterations)
-
-            dx, dy = radius, 0
-
-            g.glBegin(g.GL_TRIANGLE_FAN)
-            g.glColor3f(0.4, 0.6, 0.9)
-            g.glVertex2f(x, y)
-            for i in range(iterations + 1):
-                g.glVertex2f(x + dx, y + dy)
-                dx, dy = (dx * c - dy * s), (dy * c + dx * s)
-            g.glEnd()
-
-        # TODO use interpolation
-        # inter_pos = (
-        #     self.pos[0] + self.body.velocity[0] * interpolation,
-        #     self.pos[1] + self.body.velocity[1] * interpolation
-        # )
-        inter_pos = self.pos
-        circle(*inter_pos, Entity.RADIUS)
-
-        # debug draw velocity
-        vel_end = inter_pos[0] + self.body.velocity[0], inter_pos[1] + self.body.velocity[1]
-        g.draw(2, g.GL_LINES,
-               ("v2f", (inter_pos[0], inter_pos[1], vel_end[0], vel_end[1])),
-               ("c3B", (255, 255, 255, 255, 255, 255))
-               )
