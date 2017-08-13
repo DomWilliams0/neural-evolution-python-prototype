@@ -71,7 +71,7 @@ class Entity:
 
         # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
 
-    def render(self, interpolation):
+    def render(self):
         def circle(x, y, radius):
             """https://gist.github.com/tsterker/1396796"""
             iterations = int(2 * radius * math.pi)

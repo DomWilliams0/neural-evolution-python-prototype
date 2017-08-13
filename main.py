@@ -5,6 +5,7 @@ from world import *
 
 WORLD_SIZE = (600, 600)
 ENTITY_COUNT = 50
+SPEED_SCALE = 1
 
 # sim
 world = World(WORLD_SIZE)
@@ -12,15 +13,16 @@ entities = [Entity(world) for _ in range(ENTITY_COUNT)]
 
 
 def tick_sim(step):
-    world.tick(step)
-    for e in entities:
-        e.tick()
+    for x in range(SPEED_SCALE):
+        world.tick(step)
+        for e in entities:
+            e.tick()
 
 
 # renderer
 TICKS_PER_SECOND = 20
 SKIP_TICKS = 1 / TICKS_PER_SECOND
-MAX_FRAMESKIP = 5
+MAX_FRAMESKIP = 20
 
 
 class Renderer(pyglet.window.Window):
@@ -56,14 +58,24 @@ class Renderer(pyglet.window.Window):
     def render(self, interpolation):
         self.clear()
 
+        # TODO use interpolation?
         for e in entities:
-            e.render(interpolation)
+            e.render()
 
         self.flip()
 
     def on_key_press(self, symbol, mod):
+        global SPEED_SCALE
+
         if symbol == pyglet.window.key.ESCAPE:
             self.running = False
+
+        elif symbol == pyglet.window.key.K:
+            SPEED_SCALE += 5
+            print("Speed: ", SPEED_SCALE)
+        elif symbol == pyglet.window.key.SPACE:
+            SPEED_SCALE = 1
+            print("Speed reset")
 
 
 if __name__ == "__main__":
