@@ -7,7 +7,7 @@ import net
 
 class Entity:
     RADIUS = 8
-    MAX_FORCE = 6
+    MAX_FORCE = 30
     NEXT_ID = 1
 
     def __init__(self, world):
@@ -61,7 +61,7 @@ class Entity:
 
         steer = Vec2d(0, -1)
         steer.angle_degrees = direction
-        steer *= (Entity.MAX_FORCE * speed, Entity.MAX_FORCE * speed)
+        steer *= (speed, speed)
 
         # self.body.apply_impulse_at_local_point(steer)
         self.body.velocity = steer
