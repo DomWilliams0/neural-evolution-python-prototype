@@ -20,8 +20,8 @@ class World:
 
     def get_time(self):
         # TODO too fast
-        return (self.time % 100) / 100.0
+        return self.time / 1000
 
     def tick(self, dt):
-        self.time += 1
+        self.time = (self.time + 1) % 1000
         self.physics.step(dt)
