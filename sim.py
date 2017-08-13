@@ -25,7 +25,7 @@ class Simulator:
     def entities(self):
         return filter(lambda e: e.alive, self._entities)
 
-    def tick(self, step, speed_scale):
+    def tick(self, step):
         self.gen_time -= step
 
         # new generation
@@ -39,24 +39,22 @@ class Simulator:
             # cull silly entities
             for e in self.entities:
                 x, y = e.pos
-                if not (100 <= x <= 200 and 100 <= y <= 200):
+                if x < 300 or y < 300:
                     e.kill()
 
-            # mutate fittest
+            # collect fittest and kill them all
             fittest = list(self.entities)
+            for old in self.entities:
+                old.kill(remove_from_world=False)
+            self.world.remove_all_entities()
+
+            # take their brains and mutate them
             self._entities = self.mutate_fittest(fittest)
 
-            # kill old generation
-            for old in fittest:
-                old.kill(remove=False)
-            self.world.remove_all_entities()
-            fittest.clear()
-
         # tick entities as normal
-        for _ in range(speed_scale):
-            self.world.tick(step)
-            for e in self.entities:
-                e.tick()
+        self.world.tick(step)
+        for e in self.entities:
+            e.tick()
 
     def mutate_fittest(self, fittest):
         """

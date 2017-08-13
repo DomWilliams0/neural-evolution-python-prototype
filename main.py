@@ -38,21 +38,16 @@ class Renderer(pyglet.window.Window):
         return self.total_ticks
 
     def run(self):
-        next_tick = self.get_tick_count()
-
         while self.running:
-            loops = 0
-            while self.get_tick_count() > next_tick and loops < MAX_FRAMESKIP:
-                simulator.tick(SKIP_TICKS, SPEED_SCALE)
+            # TODO improve this (in a way that actually works)
+            #   i.e. render up to a maximum frame rate and tick multiple times before rendering
+            dt = pyglet.clock.tick()
+            simulator.tick(dt * SPEED_SCALE)
+            self.render()
 
-                next_tick += SKIP_TICKS
-                loops += 1
-
-            interpolation = float(self.get_tick_count() + SKIP_TICKS - next_tick) / SKIP_TICKS
-            self.render(interpolation)
             self.dispatch_events()
 
-    def render(self, interpolation):
+    def render(self):
         self.clear()
 
         if RENDER_TEMPERATURE:
@@ -70,9 +65,13 @@ class Renderer(pyglet.window.Window):
         if symbol == pyglet.window.key.ESCAPE:
             self.running = False
 
+        # TODO improve this mess
         elif symbol == pyglet.window.key.K:
-            SPEED_SCALE += 5
-            print("Speed: ", SPEED_SCALE)
+            SPEED_SCALE += 1
+            print("Speed:", SPEED_SCALE)
+        elif symbol == pyglet.window.key.J:
+            SPEED_SCALE -= 1
+            print("Speed:", SPEED_SCALE)
         elif symbol == pyglet.window.key.SPACE:
             SPEED_SCALE = 1
             print("Speed reset")
@@ -126,8 +125,8 @@ def render_world_temp():
 
 
 def main():
-    # while simulator.gen_no < 1000:
-    #     simulator.tick(10, 1)
+    # while simulator.gen_no < 200:
+    #     simulator.tick(3, 1)
 
     Renderer().run()
 

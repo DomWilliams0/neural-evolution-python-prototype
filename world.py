@@ -14,10 +14,10 @@ class World:
         self.entities[e.id] = e
 
     def remove_entity(self, e):
-        del self.entities[e.id]
+        self.entities.pop(e.id, None)
 
     def remove_all_entities(self):
-        self.entities.clear()
+        self.entities = {}
 
     @property
     def dims(self):
@@ -33,5 +33,5 @@ class World:
         # TODO dt doesnt affect time
         self.time = (self.time + 1) % 1000
 
-        for e in self.entities:
+        for e in self.entities.values():
             e.pos += e.velocity * dt
