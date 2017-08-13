@@ -1,7 +1,14 @@
+from colorsys import hsv_to_rgb
+
 import numpy as np
 from pymunk.vec2d import Vec2d
 
 import net
+
+# 2 inputs (temp, time)
+# 3 outputs (speed, direction, colour)
+NET_LAYERS = [2, 20, 10, 10, 3]
+DEFAULT_COLOUR = (0.9, 0.9, 0.9)
 
 
 class Entity:
@@ -14,6 +21,7 @@ class Entity:
         Entity.NEXT_ID += 1
 
         self.alive = True
+        self.colour = DEFAULT_COLOUR
 
         self.world = world
 
@@ -51,15 +59,14 @@ class Entity:
         # convert outputs
         speed = outputs[0][0] * Entity.MAX_FORCE
         direction = outputs[1][0] * 360.0
+        colour = hsv_to_rgb(outputs[2][0], 0.7, 0.7)
 
         steer = Vec2d(0, -1)
         steer.angle_degrees = direction
         steer *= (speed, speed)
-
-        # self.body.apply_impulse_at_local_point(steer)
         self.velocity = steer
 
-        # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
+        self.colour = colour
 
     def kill(self, remove_from_world=True):
         if self.alive:

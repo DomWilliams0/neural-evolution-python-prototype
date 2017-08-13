@@ -77,7 +77,7 @@ class Renderer(pyglet.window.Window):
             print("Speed reset")
 
 
-def render_circle(x, y, radius):
+def render_circle(x, y, radius, colour):
     """https://gist.github.com/tsterker/1396796"""
     iterations = int(2 * radius * math.pi)
     s = math.sin(2 * math.pi / iterations)
@@ -86,7 +86,7 @@ def render_circle(x, y, radius):
     dx, dy = radius, 0
 
     g.glBegin(g.GL_TRIANGLE_FAN)
-    g.glColor3f(0.4, 0.6, 0.9)
+    g.glColor3f(*colour)
     g.glVertex2f(x, y)
     for i in range(iterations + 1):
         g.glVertex2f(x + dx, y + dy)
@@ -100,7 +100,7 @@ def render_entity(e):
     #     self.pos[1] + self.body.velocity[1] * interpolation
     # )
     inter_pos = e.pos
-    render_circle(*inter_pos, e.RADIUS)
+    render_circle(*inter_pos, e.RADIUS, e.colour)
 
     # debug draw velocity
     vel_end = inter_pos[0] + e.velocity[0], inter_pos[1] + e.velocity[1]
