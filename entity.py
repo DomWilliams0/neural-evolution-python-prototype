@@ -26,7 +26,7 @@ class Entity:
         #     padding + np.random.rand() * (dims[0] - padding * 2),
         #     padding + np.random.rand() * (dims[1] - padding * 2)
         # )
-        pos = (dims[0]/2, dims[1]/2)
+        pos = (dims[0] / 2, dims[1] / 2)
 
         # physics
         self.body = pymunk.Body(mass=1, moment=pymunk.moment_for_circle(1, 0, Entity.RADIUS))
@@ -46,7 +46,7 @@ class Entity:
     def pos(self, pos):
         self.body.position = pos
 
-    def tick(self, dt):
+    def tick(self):
         # get inputs
         temp = self.world.get_temperature(self.pos)
         time = self.world.get_time()
@@ -71,7 +71,7 @@ class Entity:
 
         # print("{} | speed {:.4f} direction={:.4f}".format(self.id, speed, direction))
 
-    def render(self):
+    def render(self, interpolation):
         def circle(x, y, radius):
             """https://gist.github.com/tsterker/1396796"""
             iterations = int(2 * radius * math.pi)
@@ -88,11 +88,17 @@ class Entity:
                 dx, dy = (dx * c - dy * s), (dy * c + dx * s)
             g.glEnd()
 
-        circle(self.pos[0], self.pos[1], Entity.RADIUS)
+        # TODO use interpolation
+        # inter_pos = (
+        #     self.pos[0] + self.body.velocity[0] * interpolation,
+        #     self.pos[1] + self.body.velocity[1] * interpolation
+        # )
+        inter_pos = self.pos
+        circle(*inter_pos, Entity.RADIUS)
 
         # debug draw velocity
-        vel_end = self.pos[0] + self.body.velocity[0], self.pos[1] + self.body.velocity[1]
+        vel_end = inter_pos[0] + self.body.velocity[0], inter_pos[1] + self.body.velocity[1]
         g.draw(2, g.GL_LINES,
-               ("v2f", (self.pos[0], self.pos[1], vel_end[0], vel_end[1])),
+               ("v2f", (inter_pos[0], inter_pos[1], vel_end[0], vel_end[1])),
                ("c3B", (255, 255, 255, 255, 255, 255))
                )

@@ -1,12 +1,13 @@
-import pymunk
 import noise
 import numpy as np
+import pymunk
+
 
 class World:
     def __init__(self, dims):
         self._dims = dims
         self.time = 0
-        self._noise_seed = np.random.randint(1000000) # bah why not
+        self._noise_seed = np.random.randint(1000000)  # bah why not
 
         self.physics = pymunk.Space()
         self.physics.gravity = (0, 0)
@@ -19,7 +20,6 @@ class World:
         return noise.snoise2(*pos, base=self._noise_seed, octaves=2)
 
     def get_time(self):
-        # TODO too fast
         return self.time / 1000
 
     def tick(self, dt):
