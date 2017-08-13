@@ -8,13 +8,11 @@ from sim import Simulator
 WORLD_SIZE = (600, 600)
 ENTITY_COUNT = 10
 SPEED_SCALE = 1
-INITIAL_GENERATIONS = 150
+INITIAL_GENERATIONS = 0
 FAST_FORWARD_TICK_PER_SECOND = 10
 # TODO add toggle for fast forward
 
 simulator = Simulator(WORLD_SIZE, ENTITY_COUNT)
-
-# renderer
 
 # beware, very slow
 RENDER_TEMPERATURE = False
@@ -28,7 +26,7 @@ class Renderer(pyglet.window.Window):
         # background colour
         pyglet.graphics.glClearColor(0.05, 0.05, 0.07, 1)
         if RENDER_TEMPERATURE:
-            self.world_temp_backdrop = render_world_temp()
+            self.world_temp_backdrop = prerender_world_temp()
 
         self.total_ticks = 0
         self.get_tick_count()  # ticks clock
@@ -49,6 +47,8 @@ class Renderer(pyglet.window.Window):
 
     def render(self):
         self.clear()
+
+        render_world()
 
         if RENDER_TEMPERATURE:
             self.world_temp_backdrop.draw()
@@ -110,7 +110,13 @@ def render_entity(e):
            )
 
 
-def render_world_temp():
+def render_world():
+    colour = (0.8, 0.3, 0.2)
+    for (dz_centre, dz_radius) in simulator.world.death_zones:
+        render_circle(dz_centre[0], dz_centre[1], dz_radius, colour)
+
+
+def prerender_world_temp():
     world = simulator.world
     dims = world.dims
     batch = pyglet.graphics.Batch()
@@ -130,6 +136,7 @@ def main():
         simulator.tick(dt)
 
     Renderer().run()
+
 
 if __name__ == "__main__":
     main()

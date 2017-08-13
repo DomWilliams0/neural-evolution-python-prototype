@@ -38,8 +38,7 @@ class Entity:
         # physics
         world.add_entity(self)
 
-        # 2 inputs, 2 outputs
-        self.brain = net.Network([2, 4, 5, 2], weights=weights)
+        self.brain = net.Network(NET_LAYERS, weights=weights)
 
     def tick(self):
         if not self.alive:

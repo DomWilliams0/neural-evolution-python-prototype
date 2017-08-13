@@ -14,7 +14,7 @@ class World:
         self.death_zones = [
             ((radiuss[0], radiuss[0]), radiuss[0]),
             ((dims[0] - radiuss[1], dims[1] - radiuss[1]), radiuss[1]),
-            ((dims[0]/2 - radiuss[2], dims[1]/2 - radiuss[2]), radiuss[2])
+            ((dims[0] / 2 - radiuss[2], dims[1] / 2 - radiuss[2]), radiuss[2])
         ]
 
     def is_in_death_zone(self, e):
@@ -32,7 +32,6 @@ class World:
         pos = e.pos
         rad = e.RADIUS / 2
         return rad <= pos[0] < self.dims[0] - rad and rad <= pos[1] < self.dims[1] - rad
-
 
     def add_entity(self, e):
         self.entities[e.id] = e

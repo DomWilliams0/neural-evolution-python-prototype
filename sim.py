@@ -3,14 +3,16 @@ import itertools
 from entity import *
 from world import *
 
-ENTITY_COUNT = 10
+ENTITY_COUNT = 20
 SPEED_SCALE = 1
 
 TIME_PER_GENERATION = 5
+TOP_PROPORTION_TO_TAKE = 0.2
 
 MUTATE_NORMAL_MEAN = 0  # middle value
 MUTATE_NORMAL_SD = 0.2  # variation
 MUTATE_WEIGHT_CHANCE = 0.25
+FITNESS_FUNCTION = lambda e: e.world.is_inside(e)
 
 
 class Simulator:
@@ -37,19 +39,12 @@ class Simulator:
             self.gen_no += 1
             print("Creating generation {}".format(self.gen_no))
 
-            # cull silly entities
-            for e in self.entities:
-                x, y = e.pos
-                if x < 300 or y < 300:
-                    e.kill()
-
-            # collect fittest and kill them all
-            fittest = list(self.entities)
-            for old in self.entities:
-                old.kill(remove_from_world=False)
+            # collect top fittest and kill everyone
+            n_to_take = round(self.gen_size * TOP_PROPORTION_TO_TAKE)
+            fittest = list(itertools.islice(sorted(self.entities, key=FITNESS_FUNCTION, reverse=True), n_to_take))
             self.world.remove_all_entities()
 
-            # take their brains and mutate them
+            # take the best brains and mutate them
             self._entities = self.mutate_fittest(fittest)
 
         # tick entities as normal
@@ -76,9 +71,9 @@ class Simulator:
 
             return what
 
-        print("Mutating {} remaining entities".format(len(fittest)))
         # none alive: random generation
         if not fittest:
+            print("Everyone died!")
             return [Entity(self.world) for _ in range(self.gen_size)]
 
         cycle = itertools.cycle(fittest)
