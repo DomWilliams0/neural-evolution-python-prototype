@@ -10,6 +10,7 @@ TIME_PER_GENERATION = 5
 
 MUTATE_NORMAL_MEAN = 0  # middle value
 MUTATE_NORMAL_SD = 0.2  # variation
+MUTATE_WEIGHT_CHANCE = 0.25
 
 
 class Simulator:
@@ -64,8 +65,7 @@ class Simulator:
 
         def mutate(what):
             for (val, indices) in net.iterate_weights(what):
-                # only mutate half
-                if np.random.rand() < 0.5:
+                if np.random.rand() < MUTATE_WEIGHT_CHANCE:
                     continue
 
                 (list_ref, i) = net.get_from_indices(what, indices)
