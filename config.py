@@ -1,6 +1,6 @@
 # simulation
-SPEED_SCALE = 1 # TODO move to simulator
-FAST_FORWARD_TICK_PER_SECOND = 10
+# caution: this might fuck with physics if too fast
+FAST_FORWARD_SCALE = 100
 
 # generations
 TIME_PER_GENERATION = 5
@@ -25,3 +25,4 @@ WORLD_TEMP_NOISE_SCALE = 80
 # renderer
 # beware, currently very slow
 RENDER_TEMPERATURE = False
+WINDOW_SIZE = WORLD_SIZE

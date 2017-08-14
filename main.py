@@ -3,41 +3,71 @@ import math
 import pyglet
 import pyglet.graphics as g
 
-from sim import Simulator
 from config import *
+from sim import Simulator
 
 # TODO add toggle for fast forward
 
 simulator = Simulator()
 
+
 class Renderer(pyglet.window.Window):
     def __init__(self):
-        super().__init__(*WORLD_SIZE)
+        super().__init__(*WINDOW_SIZE)
         self.running = True
+
+        self.current_generation = None
+        self.generation_label = pyglet.text.Label()
+
+        self.ticker = None
+        self.toggle_fast_forward()  # sets ticker
 
         # background colour
         pyglet.graphics.glClearColor(0.05, 0.05, 0.07, 1)
         if RENDER_TEMPERATURE:
             self.world_temp_backdrop = prerender_world_temp()
 
-        self.total_ticks = 0
-        self.get_tick_count()  # ticks clock
+    def update_generation_label(self):
+        cur = simulator.gen_no
+        if cur != self.current_generation:
+            self.current_generation = cur
+            self.generation_label.text = "Generation {:04}".format(simulator.gen_no)
 
-    def get_tick_count(self):
-        self.total_ticks += pyglet.clock.tick()
-        return self.total_ticks
+    def _tick(self, mult=1):
+        dt = pyglet.clock.tick()
+        simulator.tick(dt * mult)
+        self.update_generation_label()
+
+    def tick_and_render(self):
+        self._tick()
+        self.render_simulator()
+
+    def tick_only(self):
+        self._tick(mult=FAST_FORWARD_SCALE)
+        self.render_fast_forwarding()
+
+    def toggle_fast_forward(self):
+        if self.ticker == self.tick_and_render:
+            self.ticker = self.tick_only
+            self.generation_label.x = WINDOW_SIZE[0] / 2
+            self.generation_label.y = WINDOW_SIZE[1] / 2
+            self.generation_label.font_size = 16
+            self.generation_label.anchor_x = "center"
+            self.generation_label.anchor_y = "center"
+        else:
+            self.ticker = self.tick_and_render
+            self.generation_label.x = 5
+            self.generation_label.y = 5
+            self.generation_label.font_size = 10
+            self.generation_label.anchor_x = "left"
+            self.generation_label.anchor_y = "bottom"
 
     def run(self):
         while self.running:
-            # TODO improve this (in a way that actually works)
-            #   i.e. render up to a maximum frame rate and tick multiple times before rendering
-            dt = pyglet.clock.tick()
-            simulator.tick(dt * SPEED_SCALE)
-            self.render()
-
+            self.ticker()
             self.dispatch_events()
 
-    def render(self):
+    def render_simulator(self):
         self.clear()
 
         if RENDER_TEMPERATURE:
@@ -49,24 +79,21 @@ class Renderer(pyglet.window.Window):
         for e in simulator.entities:
             render_entity(e)
 
+        self.generation_label.draw()
+
+        self.flip()
+
+    def render_fast_forwarding(self):
+        self.clear()
+        self.generation_label.draw()
         self.flip()
 
     def on_key_press(self, symbol, mod):
-        global SPEED_SCALE
-
         if symbol == pyglet.window.key.ESCAPE:
             self.running = False
 
-        # TODO improve this mess
-        elif symbol == pyglet.window.key.K:
-            SPEED_SCALE += 1
-            print("Speed:", SPEED_SCALE)
-        elif symbol == pyglet.window.key.J:
-            SPEED_SCALE -= 1
-            print("Speed:", SPEED_SCALE)
         elif symbol == pyglet.window.key.SPACE:
-            SPEED_SCALE = 1
-            print("Speed reset")
+            self.toggle_fast_forward()
 
 
 def render_circle(x, y, radius, colour):
