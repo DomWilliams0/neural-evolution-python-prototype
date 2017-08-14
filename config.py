@@ -15,7 +15,7 @@ MUTATE_WEIGHT_CHANCE = 0.25
 # entity
 # 2 inputs (temp, time)
 # 3 outputs (speed, direction, colour)
-NET_LAYERS = [2, 20, 10, 10, 3]
+NET_LAYERS = [2, 3, 3]
 ENTITY_DEFAULT_COLOUR = (0.9, 0.9, 0.9)
 ENTITY_RADIUS = 8
 ENTITY_MAX_FORCE = 60
