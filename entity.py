@@ -79,11 +79,10 @@ class Entity:
 
         self.colour = colour
 
-    def kill(self, remove_from_world=True):
+    def kill(self):
         if self.alive:
             self.alive = False
-            if remove_from_world:
-                self.world.remove_entity(self)
+            self.world.remove_entity(self)
 
     def on_eat(self, food):
         # self.health += food.nutrition

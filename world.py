@@ -106,13 +106,17 @@ class World:
             self._world.DestroyBody(e.body)
             e.body = None
 
-    # TODO reset world function, clearing all food, not just entities
-    # or just make a new world instance
-    def remove_all_entities(self):
+    def reset(self):
+        # remove all entities
         for b in self._world.bodies:
             if b.userData and b.userData.type == EntityType.ENTITY:
-                b.userData.entity.body = None
+                b.userData.entity = None
                 self._world.DestroyBody(b)
+
+        # remove all food
+        for food in self.food:
+            self.food_static_body.DestroyFixture(food.fixture)
+        self._food.clear()
 
     @property
     def dims(self):

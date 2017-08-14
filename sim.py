@@ -1,6 +1,5 @@
 import itertools
 
-from config import *
 from entity import *
 from world import *
 
@@ -14,6 +13,7 @@ class Simulator:
 
         self.gen_time = 0
         self.gen_no = 0
+
 
     @property
     def entities(self):
@@ -30,22 +30,25 @@ class Simulator:
             self.gen_no += 1
             print("Creating generation {}".format(self.gen_no))
 
-            # collect top fittest and kill everyone
+            # collect role models
             n_to_take = round(GENERATION_SIZE * TOP_PROPORTION_TO_TAKE)
-            fittest = list(itertools.islice(sorted(self.entities, key=FITNESS_FUNCTION, reverse=True), n_to_take))
-            self.world.remove_all_entities()
+            fittest_entities = itertools.islice(sorted(self.entities, key=FITNESS_FUNCTION, reverse=True), n_to_take)
 
-            # take the best brains and mutate them
-            self._entities = self.mutate_fittest(fittest)
+            # extract their brains and throw away the rest
+            fittest_brains = [e.brain for e in fittest_entities]
+            self.world.reset()
+
+            # mutate the juicy brains
+            self._entities = self.mutate_fittest(fittest_brains)
 
         # tick entities as normal
         self.world.tick(step)
         for e in self.entities:
             e.tick()
 
-    def mutate_fittest(self, fittest):
+    def mutate_fittest(self, brains):
         """
-        :param fittest: List of living Entities
+        :param brains: List of brains
         :return: A generator of the new generation of Entities
         """
 
@@ -63,14 +66,14 @@ class Simulator:
             return what
 
         # none alive: random generation
-        if not fittest:
+        if not brains:
             print("Everyone died!")
             return [Entity(self.world) for _ in range(GENERATION_SIZE)]
 
-        cycle = itertools.cycle(fittest)
+        cycle = itertools.cycle(brains)
         new_gen = []
         for _ in range(GENERATION_SIZE):
-            src_brain = next(cycle).brain
+            src_brain = next(cycle)
             new_weights = mutate(src_brain.weights)
             new_biases = mutate(src_brain.biases)
             entity = Entity(self.world, weights=new_weights, biases=new_biases)
