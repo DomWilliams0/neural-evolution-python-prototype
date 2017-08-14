@@ -4,19 +4,11 @@ import pyglet
 import pyglet.graphics as g
 
 from sim import Simulator
+from config import *
 
-WORLD_SIZE = (600, 600)
-ENTITY_COUNT = 10
-SPEED_SCALE = 1
-INITIAL_GENERATIONS = 0
-FAST_FORWARD_TICK_PER_SECOND = 10
 # TODO add toggle for fast forward
 
-simulator = Simulator(WORLD_SIZE, ENTITY_COUNT)
-
-# beware, very slow
-RENDER_TEMPERATURE = False
-
+simulator = Simulator()
 
 class Renderer(pyglet.window.Window):
     def __init__(self):
@@ -131,10 +123,6 @@ def prerender_world_temp():
 
 
 def main():
-    dt = 1.0 / FAST_FORWARD_TICK_PER_SECOND
-    while simulator.gen_no < INITIAL_GENERATIONS:
-        simulator.tick(dt)
-
     Renderer().run()
 
 

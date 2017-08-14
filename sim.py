@@ -2,25 +2,15 @@ import itertools
 
 from entity import *
 from world import *
+from config import *
 
-ENTITY_COUNT = 20
-SPEED_SCALE = 1
-
-TIME_PER_GENERATION = 5
-TOP_PROPORTION_TO_TAKE = 0.2
-
-MUTATE_NORMAL_MEAN = 0  # middle value
-MUTATE_NORMAL_SD = 0.2  # variation
-MUTATE_WEIGHT_CHANCE = 0.25
 FITNESS_FUNCTION = lambda e: e.world.is_inside(e)
 
-
 class Simulator:
-    def __init__(self, world_size, generation_size):
-        self.world = World(world_size)
+    def __init__(self):
+        self.world = World(WORLD_SIZE)
         self._entities = []
 
-        self.gen_size = generation_size
         self.gen_time = 0
         self.gen_no = 0
 
@@ -40,7 +30,7 @@ class Simulator:
             print("Creating generation {}".format(self.gen_no))
 
             # collect top fittest and kill everyone
-            n_to_take = round(self.gen_size * TOP_PROPORTION_TO_TAKE)
+            n_to_take = round(GENERATION_SIZE * TOP_PROPORTION_TO_TAKE)
             fittest = list(itertools.islice(sorted(self.entities, key=FITNESS_FUNCTION, reverse=True), n_to_take))
             self.world.remove_all_entities()
 
@@ -74,11 +64,11 @@ class Simulator:
         # none alive: random generation
         if not fittest:
             print("Everyone died!")
-            return [Entity(self.world) for _ in range(self.gen_size)]
+            return [Entity(self.world) for _ in range(GENERATION_SIZE)]
 
         cycle = itertools.cycle(fittest)
         new_gen = []
-        for _ in range(self.gen_size):
+        for _ in range(GENERATION_SIZE):
             src_brain = next(cycle).brain
             new_weights = mutate(src_brain.weights)
             new_biases = mutate(src_brain.biases)

@@ -5,12 +5,7 @@ import numpy as np
 from Box2D import b2Vec2
 
 import net
-
-# 2 inputs (temp, time)
-# 3 outputs (speed, direction, colour)
-NET_LAYERS = [2, 20, 10, 10, 3]
-DEFAULT_COLOUR = (0.9, 0.9, 0.9)
-
+from config import *
 
 class Entity:
     RADIUS = 8
@@ -22,7 +17,7 @@ class Entity:
         Entity.NEXT_ID += 1
 
         self.alive = True
-        self.colour = DEFAULT_COLOUR
+        self.colour = ENTITY_DEFAULT_COLOUR
 
         self.world = world
         self.body = None
