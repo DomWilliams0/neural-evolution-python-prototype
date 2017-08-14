@@ -24,6 +24,10 @@ ENTITY_MAX_FORCE = 60
 WORLD_SIZE = (600, 600)
 WORLD_TEMP_NOISE_SCALE = 200
 
+# food
+FOOD_RATE = 0.2  # seconds
+INITIAL_FOOD_SIMULATION = 5  # seconds; count = this/FOOD_RATE
+
 # renderer
 # beware, currently very slow
 RENDER_TEMPERATURE = False

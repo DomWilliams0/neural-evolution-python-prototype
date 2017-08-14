@@ -72,10 +72,10 @@ class World:
         self._world = b2World(gravity=(0, 0), contactListener=FoodContactListener())
         self.food_static_body = self._world.CreateStaticBody()
         self._dead_food = []
-
         self._food = {}
-        for _ in range(200):
-            self._add_random_food()
+        self.last_food = 0
+
+        self.reset()
 
     def _add_random_food(self):
         pos = (
@@ -118,6 +118,9 @@ class World:
             self.food_static_body.DestroyFixture(food.fixture)
         self._food.clear()
 
+        # reset food timers
+        self.last_food = INITIAL_FOOD_SIMULATION
+
     @property
     def dims(self):
         return self._dims
@@ -146,3 +149,9 @@ class World:
         for f in self._dead_food:
             self.food_static_body.DestroyFixture(f)
         self._dead_food.clear()
+
+        # add new food
+        self.last_food += dt
+        while self.last_food >= FOOD_RATE:
+            self.last_food -= FOOD_RATE
+            self._add_random_food()
