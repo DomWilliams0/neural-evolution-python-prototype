@@ -84,3 +84,8 @@ class Entity:
             self.alive = False
             if remove_from_world:
                 self.world.remove_entity(self)
+
+    def on_eat(self, food):
+        # self.health += food.nutrition
+        # TODO health
+        print("{} ate {} food".format(self.id, food.nutrition))

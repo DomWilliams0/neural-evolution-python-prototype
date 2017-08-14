@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import math
 
 import pyglet
@@ -132,8 +134,8 @@ def render_entity(e):
 
 
 def render_world():
-    # nothing for now
-    pass
+    for food in simulator.world.food:
+        render_circle(*food.pos, food.radius, food.colour)
 
 
 def prerender_world_temp():
