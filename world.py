@@ -11,10 +11,12 @@ from config import *
 class EntityType(Enum):
     ENTITY = 1 << 1
     FOOD = 1 << 2
+    FOOD_SENSOR = 1 << 3  # TODO generalise sensor type?
 
 
 # handy
 _ENTITY_AND_FOOD = EntityType.ENTITY.value | EntityType.FOOD.value
+_FOOD_SENSOR = EntityType.FOOD.value | EntityType.FOOD_SENSOR.value
 
 UserData = namedtuple("UserData", "entity type")
 
@@ -120,6 +122,9 @@ class World:
 
         # reset food timers
         self.last_food = INITIAL_FOOD_SIMULATION
+
+    def create_entity_sensor(self, e, vertices, sensor_type):
+        e.body.CreateEdgeFixture(vertices=vertices, isSensor=False, userData=UserData(e, sensor_type))
 
     @property
     def dims(self):

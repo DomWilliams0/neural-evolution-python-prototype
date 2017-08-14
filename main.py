@@ -125,6 +125,18 @@ def render_entity(e):
     inter_pos = e.pos
     render_circle(*inter_pos, ENTITY_RADIUS, e.colour)
 
+    # sensors
+    for s in e.sensors:
+        colour = (50, 140, 80)
+        # TODO colour depends on type
+        vertices = s.get_vertices(rel_angle=e.angle)
+        vertices = (vertices[0] + e.pos, vertices[1] + e.pos)
+
+        g.draw(2, g.GL_LINES,
+               ("v2f", (*vertices[0], *vertices[1])),
+               ("c3B", (*colour, *colour))
+               )
+
     # debug draw velocity
     vel_end = inter_pos[0] + e.velocity[0], inter_pos[1] + e.velocity[1]
     g.draw(2, g.GL_LINES,

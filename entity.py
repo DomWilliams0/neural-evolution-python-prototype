@@ -1,13 +1,26 @@
-import math
 from colorsys import hsv_to_rgb
 
 import numpy as np
 from Box2D import b2Vec2
 
 import net
-from config import *
 import util
+from config import *
+from world import EntityType
 
+
+class Sensor:
+    def __init__(self, angle, length, sensor_type):
+        self.angle = angle
+        self.length = length
+        self.sensor_type = sensor_type
+
+    def get_vertices(self, rel_angle=0):
+        angle = self.angle + rel_angle
+        sensor_direction = util.vec_from_degrees(angle)
+        src = sensor_direction * ENTITY_RADIUS
+        dst = sensor_direction * (ENTITY_RADIUS + self.length)
+        return src, dst
 
 class Entity:
     NEXT_ID = 1
@@ -22,6 +35,9 @@ class Entity:
         self.world = world
         self.body = None
         world.add_entity(self)
+
+        self.sensors = []
+        self._add_sensor(0.5, 0.25, EntityType.FOOD_SENSOR)  # 90 degrees on left
 
         dims = world.dims
         self.pos = (dims[0] / 2, dims[1] / 2)
@@ -52,6 +68,10 @@ class Entity:
     def velocity(self, value):
         self.body.linearVelocity = value
 
+    @property
+    def angle(self):
+        return self.body.angle
+
     def tick(self):
         if not self.alive:
             return
@@ -73,6 +93,7 @@ class Entity:
         colour = hsv_to_rgb(outputs[2][0], 0.7, 0.7)
 
         self.velocity = util.vec_from_degrees(direction, speed)
+        self.body.angle = direction
 
         self.colour = colour
 
@@ -85,3 +106,13 @@ class Entity:
         # self.health += food.nutrition
         # TODO health
         print("{} ate {} food".format(self.id, food.nutrition))
+
+    def _add_sensor(self, len_float, angle_float, sensor_type):
+        length = np.interp(len_float, (0, 1), SENSOR_LENGTH_LIMITS)
+        angle = (angle_float * 360)
+        sensor = Sensor(angle, length, sensor_type)
+
+        # TODO check rendering matches physical location
+        vertices = sensor.get_vertices()
+        self.world.create_entity_sensor(self, vertices, sensor_type)
+        self.sensors.append(sensor)
