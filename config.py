@@ -34,3 +34,4 @@ KEEP_SPAWNING_FOOD = True  # if false, only spawn initial food
 # beware, currently very slow
 RENDER_TEMPERATURE = False
 WINDOW_SIZE = WORLD_SIZE
+RENDER_DEBUG_PHYSICS = False

@@ -2,6 +2,7 @@
 
 import math
 
+import Box2D
 import pyglet
 import pyglet.graphics as g
 
@@ -77,9 +78,10 @@ class Renderer(pyglet.window.Window):
 
         render_world()
 
-        # TODO use interpolation?
         for e in simulator.entities:
             render_entity(e)
+
+        simulator.world.world.DrawDebugData()
 
         self.generation_label.draw()
 
@@ -162,6 +164,37 @@ def prerender_world_temp():
             batch.add(1, pyglet.gl.GL_POINTS, None, ("v2i", (x, y)), ("c3f", colour))
 
     return batch
+
+
+class PhysicsDebugRenderer(Box2D.b2Draw):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.AppendFlags(self.e_shapeBit)
+
+    def DrawSolidCircle(self, center, radius, axis, color):
+        render_circle(center[0], center[1], radius, color)
+
+    def DrawSegment(self, p1, p2, color):
+        g.draw(2, g.GL_LINES,
+               ("v2f", (*p1, *p2)),
+               ("c3f", (*color, *color))
+               )
+
+    def DrawCircle(self, center, radius, color):
+        print("DrawCircle")
+
+    def DrawPolygon(self, vertices, vertexCount, color):
+        print("DrawPolygon")
+
+    def DrawSolidPolygon(self, vertices, vertexCount, color):
+        print("DrawSolidPolygon")
+
+    def DrawTransform(self, xf):
+        print("DrawTransform")
+
+
+if RENDER_DEBUG_PHYSICS:
+    simulator.world.world.renderer = PhysicsDebugRenderer()
 
 
 def main():
