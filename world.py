@@ -71,8 +71,8 @@ class World:
         self.time = 0
         self._noise_seed = np.random.randint(1000000)  # bah why not
 
-        self._world = b2World(gravity=(0, 0), contactListener=FoodContactListener())
-        self.food_static_body = self._world.CreateStaticBody()
+        self.world = b2World(gravity=(0, 0), contactListener=FoodContactListener())
+        self.food_static_body = self.world.CreateStaticBody()
         self._dead_food = []
         self._food = {}
         self.last_food = 0
@@ -100,19 +100,19 @@ class World:
         return rad <= pos[0] < self.dims[0] - rad and rad <= pos[1] < self.dims[1] - rad
 
     def add_entity(self, e):
-        e.body = self._world.CreateDynamicBody()
+        e.body = self.world.CreateDynamicBody()
         e.body.CreateCircleFixture(radius=ENTITY_RADIUS, userData=UserData(e, EntityType.ENTITY))
 
     def remove_entity(self, e):
         if e.body:
-            self._world.DestroyBody(e.body)
+            self.world.DestroyBody(e.body)
             e.body = None
 
     def reset(self):
         # remove all dynamic bodies
-        for b in self._world.bodies:
+        for b in self.world.bodies:
             if b.type == b2_dynamicBody:
-                self._world.DestroyBody(b)
+                self.world.DestroyBody(b)
 
         # remove all food
         for food in self.food:
@@ -123,7 +123,7 @@ class World:
         self.last_food = INITIAL_FOOD_SIMULATION
 
     def create_entity_sensor(self, e, vertices, sensor_type):
-        e.body.CreateEdgeFixture(vertices=vertices, isSensor=False, userData=UserData(e, sensor_type))
+        e.body.CreateEdgeFixture(vertices=vertices, isSensor=True, userData=UserData(e, sensor_type))
 
     @property
     def dims(self):
@@ -146,7 +146,7 @@ class World:
         self.time = int(self.time) % 100
 
         # TODO iterations depend on fast forward?
-        self._world.Step(dt, 2, 1)
+        self.world.Step(dt, 2, 1)
 
         # remove all dead food that couldn't be removed in callback
         # TODO and dead entities? only when they're killed in a collision callback

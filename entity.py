@@ -70,7 +70,7 @@ class Entity:
 
     @property
     def angle(self):
-        return self.body.angle
+        return np.rad2deg(self.body.angle)
 
     def tick(self):
         if not self.alive:
@@ -93,7 +93,7 @@ class Entity:
         colour = hsv_to_rgb(outputs[2][0], 0.7, 0.7)
 
         self.velocity = util.vec_from_degrees(direction, speed)
-        self.body.angle = direction
+        self.body.angle = np.deg2rad(direction)
 
         self.colour = colour
 
