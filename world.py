@@ -109,10 +109,9 @@ class World:
             e.body = None
 
     def reset(self):
-        # remove all entities
+        # remove all dynamic bodies
         for b in self._world.bodies:
-            if b.userData and b.userData.type == EntityType.ENTITY:
-                b.userData.entity = None
+            if b.type == b2_dynamicBody:
                 self._world.DestroyBody(b)
 
         # remove all food
