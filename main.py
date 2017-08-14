@@ -119,7 +119,7 @@ def render_entity(e):
     #     self.pos[1] + self.body.velocity[1] * interpolation
     # )
     inter_pos = e.pos
-    render_circle(*inter_pos, e.RADIUS, e.colour)
+    render_circle(*inter_pos, ENTITY_RADIUS, e.colour)
 
     # debug draw velocity
     vel_end = inter_pos[0] + e.velocity[0], inter_pos[1] + e.velocity[1]

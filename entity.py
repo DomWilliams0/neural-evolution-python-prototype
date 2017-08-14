@@ -1,5 +1,5 @@
-from colorsys import hsv_to_rgb
 import math
+from colorsys import hsv_to_rgb
 
 import numpy as np
 from Box2D import b2Vec2
@@ -7,9 +7,8 @@ from Box2D import b2Vec2
 import net
 from config import *
 
+
 class Entity:
-    RADIUS = 8
-    MAX_FORCE = 60
     NEXT_ID = 1
 
     def __init__(self, world, weights=None, biases=None):
@@ -28,7 +27,7 @@ class Entity:
         self.velocity = b2Vec2()
 
         # random position
-        # padding = Entity.RADIUS * 5
+        # padding = ENTITY_RADIUS * 5
         # self.pos = (
         #     padding + np.random.rand() * (dims[0] - padding * 2),
         #     padding + np.random.rand() * (dims[1] - padding * 2)
@@ -72,7 +71,7 @@ class Entity:
         outputs = self.brain.feed_forward(inputs)
 
         # convert outputs
-        speed = outputs[0][0] * Entity.MAX_FORCE
+        speed = outputs[0][0] * ENTITY_MAX_FORCE
         direction = outputs[1][0] * 360.0
         colour = hsv_to_rgb(outputs[2][0], 0.7, 0.7)
 

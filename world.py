@@ -33,12 +33,12 @@ class World:
 
     def is_inside(self, e):
         pos = e.pos
-        rad = e.RADIUS / 2
+        rad = ENTITY_RADIUS / 2
         return rad <= pos[0] < self.dims[0] - rad and rad <= pos[1] < self.dims[1] - rad
 
     def add_entity(self, e):
         e.body = self._world.CreateDynamicBody(userData=e)
-        e.body.CreateCircleFixture(radius=e.RADIUS)
+        e.body.CreateCircleFixture(radius=ENTITY_RADIUS)
 
     def remove_entity(self, e):
         if e.body:
