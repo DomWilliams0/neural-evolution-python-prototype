@@ -96,20 +96,21 @@ class Renderer(pyglet.window.Window):
             self.toggle_fast_forward()
 
 
+_CIRCLE_ITERATIONS = 10
+_CIRCLE_S = math.sin(2 * math.pi / _CIRCLE_ITERATIONS)
+_CIRCLE_C = math.cos(2 * math.pi / _CIRCLE_ITERATIONS)
+
 def render_circle(x, y, radius, colour):
     """https://gist.github.com/tsterker/1396796"""
-    iterations = int(2 * radius * math.pi)
-    s = math.sin(2 * math.pi / iterations)
-    c = math.cos(2 * math.pi / iterations)
 
     dx, dy = radius, 0
 
     g.glBegin(g.GL_TRIANGLE_FAN)
     g.glColor3f(*colour)
     g.glVertex2f(x, y)
-    for i in range(iterations + 1):
+    for i in range(_CIRCLE_ITERATIONS + 1):
         g.glVertex2f(x + dx, y + dy)
-        dx, dy = (dx * c - dy * s), (dy * c + dx * s)
+        dx, dy = (dx * _CIRCLE_C - dy * _CIRCLE_S), (dy * _CIRCLE_C + dx * _CIRCLE_S)
     g.glEnd()
 
 
