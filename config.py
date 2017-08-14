@@ -22,7 +22,7 @@ ENTITY_MAX_FORCE = 60
 
 # world
 WORLD_SIZE = (600, 600)
-WORLD_TEMP_NOISE_SCALE = 80
+WORLD_TEMP_NOISE_SCALE = 200
 
 # renderer
 # beware, currently very slow
