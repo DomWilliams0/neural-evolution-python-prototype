@@ -1,10 +1,11 @@
 import itertools
 
+from config import *
 from entity import *
 from world import *
-from config import *
 
 FITNESS_FUNCTION = lambda e: e.world.is_inside(e)
+
 
 class Simulator:
     def __init__(self):

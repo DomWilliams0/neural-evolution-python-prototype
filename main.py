@@ -100,6 +100,7 @@ _CIRCLE_ITERATIONS = 10
 _CIRCLE_S = math.sin(2 * math.pi / _CIRCLE_ITERATIONS)
 _CIRCLE_C = math.cos(2 * math.pi / _CIRCLE_ITERATIONS)
 
+
 def render_circle(x, y, radius, colour):
     """https://gist.github.com/tsterker/1396796"""
 

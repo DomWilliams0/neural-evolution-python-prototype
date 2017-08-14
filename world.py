@@ -4,6 +4,7 @@ from Box2D import *
 
 from config import *
 
+
 class World:
     def __init__(self, dims):
         self._dims = dims
@@ -55,7 +56,8 @@ class World:
         return self._dims
 
     def get_temperature(self, pos):
-        return noise.snoise2(pos[0] / WORLD_TEMP_NOISE_SCALE, pos[1] / WORLD_TEMP_NOISE_SCALE, base=self._noise_seed, octaves=2)
+        return noise.snoise2(pos[0] / WORLD_TEMP_NOISE_SCALE, pos[1] / WORLD_TEMP_NOISE_SCALE, base=self._noise_seed,
+                             octaves=2)
 
     def get_time(self):
         return self.time / 100
