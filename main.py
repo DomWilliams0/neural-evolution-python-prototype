@@ -132,9 +132,8 @@ def render_entity(e):
 
 
 def render_world():
-    colour = (0.8, 0.3, 0.2)
-    for (dz_centre, dz_radius) in simulator.world.death_zones:
-        render_circle(dz_centre[0], dz_centre[1], dz_radius, colour)
+    # nothing for now
+    pass
 
 
 def prerender_world_temp():

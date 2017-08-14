@@ -4,7 +4,7 @@ from config import *
 from entity import *
 from world import *
 
-FITNESS_FUNCTION = lambda e: e.world.is_inside(e)
+FITNESS_FUNCTION = lambda e: not e.world.is_inside(e)
 
 
 class Simulator:

@@ -13,25 +13,6 @@ class World:
 
         self._world = b2World(gravity=(0, 0))
 
-        # arbitrary for testing
-        radiuss = np.random.randint(60, 120, size=3)
-        self.death_zones = [
-            ((radiuss[0], radiuss[0]), radiuss[0]),
-            ((dims[0] - radiuss[1], dims[1] - radiuss[1]), radiuss[1]),
-            ((dims[0] / 2 - radiuss[2], dims[1] / 2 - radiuss[2]), radiuss[2])
-        ]
-
-    def is_in_death_zone(self, e):
-        pos = e.pos
-        for (zone_centre, zone_radius) in self.death_zones:
-            dx = zone_centre[0] - pos[0]
-            dy = zone_centre[1] - pos[1]
-            dist_sqrd = (dx * dx) + (dy * dy)
-            if dist_sqrd <= zone_radius * zone_radius:
-                return True
-
-        return False
-
     def is_inside(self, e):
         pos = e.pos
         rad = ENTITY_RADIUS / 2
