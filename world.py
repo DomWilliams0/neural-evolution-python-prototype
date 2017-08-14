@@ -151,7 +151,8 @@ class World:
         self._dead_food.clear()
 
         # add new food
-        self.last_food += dt
+        if KEEP_SPAWNING_FOOD:
+            self.last_food += dt
         while self.last_food >= FOOD_RATE:
             self.last_food -= FOOD_RATE
             self._add_random_food()

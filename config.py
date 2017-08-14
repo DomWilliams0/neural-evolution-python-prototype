@@ -27,6 +27,7 @@ WORLD_TEMP_NOISE_SCALE = 200
 # food
 FOOD_RATE = 0.2  # seconds
 INITIAL_FOOD_SIMULATION = 5  # seconds; count = this/FOOD_RATE
+KEEP_SPAWNING_FOOD = True  # if false, only spawn initial food
 
 # renderer
 # beware, currently very slow
