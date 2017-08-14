@@ -6,6 +6,7 @@ from Box2D import b2Vec2
 
 import net
 from config import *
+import util
 
 
 class Entity:
@@ -71,11 +72,7 @@ class Entity:
         direction = outputs[1][0] * 360.0
         colour = hsv_to_rgb(outputs[2][0], 0.7, 0.7)
 
-        direction_rad = np.deg2rad(direction)
-        self.velocity = b2Vec2(
-            speed * math.cos(direction_rad),
-            speed * math.sin(direction_rad)
-        )
+        self.velocity = util.vec_from_degrees(direction, speed)
 
         self.colour = colour
 
