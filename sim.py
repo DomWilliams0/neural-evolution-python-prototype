@@ -3,7 +3,9 @@ import itertools
 from entity import *
 from world import *
 
-FITNESS_FUNCTION = lambda e: not e.world.is_inside(e)
+
+def fitness_function(e):
+    return e.total_food_eaten
 
 
 class Simulator:
@@ -27,15 +29,16 @@ class Simulator:
             self.gen_time = TIME_PER_GENERATION
 
             self.gen_no += 1
-            print("Creating generation {}".format(self.gen_no))
 
             # collect role models
-            n_to_take = round(GENERATION_SIZE * TOP_PROPORTION_TO_TAKE)
-            fittest_entities = itertools.islice(sorted(self.entities, key=FITNESS_FUNCTION, reverse=True), n_to_take)
+            n_to_take = round(len(self._entities) * TOP_PROPORTION_TO_TAKE)
+            fittest_entities = itertools.islice(sorted(self.entities, key=fitness_function, reverse=True), n_to_take)
 
             # extract their brains and throw away the rest
             fittest_brains = [e.brain for e in fittest_entities]
             self.world.reset()
+
+            print(f"Creating generation {self.gen_no} from top {len(fittest_brains)} ({100 * TOP_PROPORTION_TO_TAKE}%)")
 
             # mutate the juicy brains
             self._entities.clear()
