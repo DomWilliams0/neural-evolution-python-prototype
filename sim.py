@@ -74,8 +74,7 @@ class Simulator:
         new_gen = []
         for _ in range(GENERATION_SIZE):
             src_brain = next(cycle)
-            new_weights = mutate(src_brain.weights)
-            new_biases = mutate(src_brain.biases)
-            entity = Entity(self.world, weights=new_weights, biases=new_biases)
+            new_brain = src_brain.copy_and_mutate()
+            entity = Entity(self.world, brain=new_brain)
             new_gen.append(entity)
         return new_gen
