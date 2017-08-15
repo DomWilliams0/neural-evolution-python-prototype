@@ -9,11 +9,10 @@ FITNESS_FUNCTION = lambda e: not e.world.is_inside(e)
 class Simulator:
     def __init__(self):
         self.world = World(WORLD_SIZE)
-        self._entities = []
+        self._entities = self.world.entities
 
         self.gen_time = 0
         self.gen_no = 0
-
 
     @property
     def entities(self):
@@ -39,7 +38,8 @@ class Simulator:
             self.world.reset()
 
             # mutate the juicy brains
-            self._entities = self.mutate_fittest(fittest_brains)
+            self._entities.clear()
+            self._entities.extend(self.mutate_fittest(fittest_brains))
 
         # tick entities as normal
         self.world.tick(step)
@@ -52,29 +52,19 @@ class Simulator:
         :return: A generator of the new generation of Entities
         """
 
-        def mutate(what):
-            for (val, indices) in net.iterate_weights(what):
-                if np.random.rand() < MUTATE_WEIGHT_CHANCE:
-                    continue
-
-                (list_ref, i) = net.get_from_indices(what, indices)
-
-                # normal distribution from ~-0.6 - ~0.6
-                change = np.random.normal(loc=MUTATE_NORMAL_MEAN, scale=MUTATE_NORMAL_SD)
-                list_ref[i] += change
-
-            return what
+        def random_pos():
+            return (
+                np.random.randint(ENTITY_RADIUS, WORLD_SIZE[0] - ENTITY_RADIUS - ENTITY_RADIUS),
+                np.random.randint(ENTITY_RADIUS, WORLD_SIZE[1] - ENTITY_RADIUS - ENTITY_RADIUS)
+            )
 
         # none alive: random generation
         if not brains:
             print("Everyone died!")
-            return [Entity(self.world) for _ in range(GENERATION_SIZE)]
+            yield from iter(self.world.create_entity(pos=random_pos()) for _ in range(GENERATION_SIZE))
 
         cycle = itertools.cycle(brains)
-        new_gen = []
         for _ in range(GENERATION_SIZE):
             src_brain = next(cycle)
             new_brain = src_brain.copy_and_mutate()
-            entity = Entity(self.world, brain=new_brain)
-            new_gen.append(entity)
-        return new_gen
+            yield self.world.create_entity(pos=random_pos(), brain=new_brain)

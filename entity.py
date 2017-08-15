@@ -22,10 +22,14 @@ class Sensor:
         dst = sensor_direction * (ENTITY_RADIUS + self.length)
         return src, dst
 
+
 class Entity:
     NEXT_ID = 1
 
-    def __init__(self, world, brain=None):
+    def __init__(self, world, body, pos=(0, 0), brain=None):
+        """
+        Shouldnt be used directly, use world.create_entity instead
+        """
         self.id = Entity.NEXT_ID
         Entity.NEXT_ID += 1
 
@@ -33,22 +37,15 @@ class Entity:
         self.colour = ENTITY_DEFAULT_COLOUR
 
         self.world = world
-        self.body = None
-        world.add_entity(self)
+        self.body = body
+        self.pos = pos
+        self.velocity = b2Vec2()
 
         self.sensors = []
         self._add_sensor(0.5, 0.25, EntityType.FOOD_SENSOR)  # 90 degrees on left
 
-        dims = world.dims
-        self.pos = (dims[0] / 2, dims[1] / 2)
-        self.velocity = b2Vec2()
-
-        # random position
-        # padding = ENTITY_RADIUS * 5
-        # self.pos = (
-        #     padding + np.random.rand() * (dims[0] - padding * 2),
-        #     padding + np.random.rand() * (dims[1] - padding * 2)
-        # )
+        self.total_food_eaten = 0
+        self.cumulative_food = 0
 
         if brain is None:
             self.brain = net.Network(NET_LAYERS)
@@ -106,16 +103,22 @@ class Entity:
             self.world.remove_entity(self)
 
     def on_eat(self, food):
-        # self.health += food.nutrition
-        # TODO health
+        self.total_food_eaten += food.nutrition
+        self.cumulative_food += food.nutrition
         print("{} ate {} food".format(self.id, food.nutrition))
+
+        while self.cumulative_food > ENTITY_REPRODUCE_PER_N_FOOD:
+            self.cumulative_food -= ENTITY_REPRODUCE_PER_N_FOOD
+
+            child_brain = self.brain.copy_and_mutate()
+            self.world.create_entity(instant=False, brain=child_brain, pos=self.pos)
+            print("{} had a baby".format(self.id))
 
     def _add_sensor(self, len_float, angle_float, sensor_type):
         length = np.interp(len_float, (0, 1), SENSOR_LENGTH_LIMITS)
         angle = (angle_float * 360)
         sensor = Sensor(angle, length, sensor_type)
 
-        # TODO check rendering matches physical location
         vertices = sensor.get_vertices()
         self.world.create_entity_sensor(self, vertices, sensor_type)
         self.sensors.append(sensor)

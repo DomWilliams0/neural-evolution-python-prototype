@@ -5,6 +5,7 @@ import noise
 import numpy as np
 from Box2D import *
 
+import entity
 from config import *
 
 
@@ -28,8 +29,7 @@ class Food:
         self.id = Food.NEXT_ID
         Food.NEXT_ID += 1
 
-        # TODO move constants to config when final
-        self.nutrition = np.random.randint(1, 4)
+        self.nutrition = np.random.randint(*FOOD_NUTRITION_RANGE)
         self.colour = (0.1, 0.8, 0.4)
 
         self.world = world
@@ -77,6 +77,10 @@ class World:
         self._food = {}
         self.last_food = 0
 
+        # all entities, dead and alive
+        self.entities = []
+        self._entities_to_add = []
+
         self.reset()
 
     def _add_random_food(self):
@@ -99,9 +103,21 @@ class World:
         rad = ENTITY_RADIUS / 2
         return rad <= pos[0] < self.dims[0] - rad and rad <= pos[1] < self.dims[1] - rad
 
-    def add_entity(self, e):
-        e.body = self.world.CreateDynamicBody()
-        e.body.CreateCircleFixture(radius=ENTITY_RADIUS, userData=UserData(e, EntityType.ENTITY))
+    def create_entity(self, instant=True, **entity_kwargs):
+        if not instant:
+            self._entities_to_add.append(entity_kwargs)
+            return
+
+        body = self.world.CreateDynamicBody()
+        fix = body.CreateCircleFixture(radius=ENTITY_RADIUS)
+
+        entity_kwargs["body"] = body
+        entity_kwargs["world"] = self
+        e = entity.Entity(**entity_kwargs)
+        fix.userData = UserData(e, EntityType.ENTITY)
+        self.entities.append(e)
+
+        return e
 
     def remove_entity(self, e):
         if e.body:
@@ -145,10 +161,12 @@ class World:
         self.time += dt
         self.time = int(self.time) % 100
 
-        # TODO iterations depend on fast forward?
-        self.world.Step(dt, 2, 1)
+        # add queued entities
+        for kwargs in self._entities_to_add:
+            self.create_entity(**kwargs)
+        self._entities_to_add.clear()
 
-        # remove all dead food that couldn't be removed in callback
+        # remove dead food
         # TODO and dead entities? only when they're killed in a collision callback
         for f in self._dead_food:
             self.food_static_body.DestroyFixture(f)
@@ -160,3 +178,6 @@ class World:
         while self.last_food >= FOOD_RATE:
             self.last_food -= FOOD_RATE
             self._add_random_food()
+
+        # TODO iterations depend on fast forward?
+        self.world.Step(dt, 2, 1)
